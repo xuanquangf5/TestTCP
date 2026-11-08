@@ -49,7 +49,11 @@ class NetworkSession:
             tcp = self._socket(socket.SOCK_STREAM)
             udp = self._socket(socket.SOCK_DGRAM)
             if role == 'server':
-                tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+                if hasattr(socket, 'SO_EXCLUSIVEADDRUSE'):
+                    tcp.setsockopt(socket.SOL_SOCKET, socket.SO_EXCLUSIVEADDRUSE, 1)
+                    udp.setsockopt(socket.SOL_SOCKET, socket.SO_EXCLUSIVEADDRUSE, 1)
+                else:
+                    tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
                 tcp.bind(('0.0.0.0', self.tcp_port))
                 tcp.listen()
                 udp.bind(('0.0.0.0', self.udp_port))
