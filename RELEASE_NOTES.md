@@ -1,3 +1,5 @@
+Server luôn bind `0.0.0.0` cho TCP và UDP. Ô IP chỉ dùng khi chạy client và vẫn tự điền IP local.
+
 App test TCP/UDP có giao diện, chạy độc lập ở chế độ server hoặc client. Không cần cài Python.
 
 | File | Máy phù hợp |

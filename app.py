@@ -108,7 +108,7 @@ class App:
         self.entries = []
         self.values = []
         for col, (label, value, width) in enumerate([
-            ('IP server / IP bind', local_ip(), 22), ('TCP port', '8008', 10), ('UDP port', '8004', 10)
+            ('IP server (client)', local_ip(), 22), ('TCP port', '8008', 10), ('UDP port', '8004', 10)
         ]):
             frame = ttk.Frame(config)
             frame.grid(row=0, column=col, padx=(0, 16), sticky='w')

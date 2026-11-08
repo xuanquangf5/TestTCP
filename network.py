@@ -17,7 +17,6 @@ def local_ip():
 
 class NetworkSession:
     def __init__(self, ip, tcp_port, udp_port, log, failed=lambda: None):
-        socket.inet_pton(socket.AF_INET, ip)
         if not all(1 <= p <= 65535 for p in (tcp_port, udp_port)):
             raise ValueError('Port phải nằm trong khoảng 1–65535.')
         self.ip, self.tcp_port, self.udp_port = ip, tcp_port, udp_port
@@ -45,17 +44,19 @@ class NetworkSession:
 
     def start(self, role):
         try:
+            if role == 'client':
+                socket.inet_pton(socket.AF_INET, self.ip)
             tcp = self._socket(socket.SOCK_STREAM)
             udp = self._socket(socket.SOCK_DGRAM)
             if role == 'server':
                 tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-                tcp.bind((self.ip, self.tcp_port))
+                tcp.bind(('0.0.0.0', self.tcp_port))
                 tcp.listen()
-                udp.bind((self.ip, self.udp_port))
+                udp.bind(('0.0.0.0', self.udp_port))
                 self._thread(self._accept, tcp)
                 self._thread(self._udp_server, udp)
-                self.log('INFO', f'Server TCP đang nghe tại {self.ip}:{self.tcp_port}')
-                self.log('INFO', f'Server UDP đang nghe tại {self.ip}:{self.udp_port}')
+                self.log('INFO', f'Server TCP đang nghe tại 0.0.0.0:{self.tcp_port}')
+                self.log('INFO', f'Server UDP đang nghe tại 0.0.0.0:{self.udp_port}')
             else:
                 tcp.settimeout(3)
                 tcp.connect((self.ip, self.tcp_port))

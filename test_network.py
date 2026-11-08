@@ -78,6 +78,17 @@ class NetworkTests(unittest.TestCase):
             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as probe:
                 probe.bind(('127.0.0.1', self.tcp))
 
+    def test_server_ignores_client_ip_and_binds_all_interfaces(self):
+        server = NetworkSession('not-a-client-ip', self.tcp, self.udp, lambda *_: None)
+        self.sessions.append(server)
+        server.start('server')
+        self.assertEqual([sock.getsockname()[0] for sock in server.sockets],
+                         ['0.0.0.0', '0.0.0.0'])
+        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as client:
+            client.settimeout(2)
+            client.sendto(b'Hello UDP 007', ('127.0.0.1', self.udp))
+            self.assertEqual(client.recvfrom(1024)[0], b'Okie UDP 007')
+
     def test_failed_client_cleans_up(self):
         client = self.session()
         with self.assertRaises(OSError):

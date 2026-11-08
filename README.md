@@ -15,17 +15,17 @@ Nếu Python báo thiếu `tkinter`, cài bản Python có hỗ trợ Tcl/Tk.
 
 ## Sử dụng
 
-1. Cửa sổ server: nhập IP LAN của máy server (hoặc `127.0.0.1` khi thử cùng máy), TCP `8008`, UDP `8004`, nhấn **Start Server**.
+1. Cửa sổ server: ô IP không được sử dụng; server luôn nghe trên `0.0.0.0`. Nhập TCP `8008`, UDP `8004`, nhấn **Start Server**.
 2. Cửa sổ client: nhập cùng IP và port của server, nhấn **Start Client**.
 3. TCP gửi ngay `Hello TCP 001`; một giây sau UDP gửi `Hello UDP 001`. Mỗi giao thức gửi mỗi hai giây, bộ đếm độc lập.
 4. Server trả `Okie TCP 001` hoặc `Okie UDP 001` theo đúng số nhận. Log hiển thị gửi, nhận, lỗi và cảnh báo quá 5 giây chưa có phản hồi.
 5. Nhấn nút **Stop** màu đỏ để dừng. Start lại sẽ đặt lại hai bộ đếm về `001`.
 
-IP mặc định được lấy từ địa chỉ IPv4 của giao diện mạng dùng định tuyến; nếu không lấy được sẽ dùng `127.0.0.1`. Máy nhiều card mạng có thể cần sửa IP bằng tay. Server có thể bind `0.0.0.0` để nghe mọi giao diện; client phải dùng IP cụ thể của server.
+IP mặc định được lấy từ địa chỉ IPv4 của giao diện mạng dùng định tuyến; nếu không lấy được sẽ dùng `127.0.0.1`. Ô IP chỉ dùng làm địa chỉ server đích khi chạy client. Server luôn bind `0.0.0.0` cho cả TCP và UDP để nghe mọi giao diện IPv4, bất kể nội dung ô IP. Client phải dùng IP LAN thật của server hoặc `127.0.0.1` khi thử cùng máy.
 
 Khi thử hai máy, cho phép TCP 8008 và UDP 8004 qua firewall của máy server. TCP phải kết nối thành công trước khi client bắt đầu gửi cả hai giao thức. UDP không có bắt tay kết nối; xem phản hồi để biết đường truyền hoạt động.
 
-Mỗi cửa sổ chạy một vai trò. Nhiều client có thể dùng chung server. Hai server bind trùng IP/port sẽ báo lỗi. Khi một trong hai port server không mở được, app hủy cả phiên.
+Mỗi cửa sổ chạy một vai trò. Nhiều client có thể dùng chung server. Hai server bind trùng port sẽ báo lỗi. Khi một trong hai port server không mở được, app hủy cả phiên.
 
 Thông điệp TCP mã hóa UTF-8 và kết thúc bằng `\n`; UDP dùng một datagram cho mỗi thông điệp. App giữ tối đa khoảng 5.000 dòng log. Nút bo góc được vẽ riêng để giữ nền giao diện gốc và màu xanh/đỏ trên macOS.
 
