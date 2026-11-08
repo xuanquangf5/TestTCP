@@ -1,6 +1,7 @@
 """Run with: python3 app.py"""
 
 import queue
+import sys
 import threading
 import tkinter as tk
 from tkinter import messagebox, ttk
@@ -221,5 +222,7 @@ class App:
 
 if __name__ == '__main__':
     window = tk.Tk()
-    App(window)
+    app = App(window)
+    if '--smoke-test' in sys.argv:
+        window.after(1000, app.close)
     window.mainloop()

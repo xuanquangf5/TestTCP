@@ -1,6 +1,6 @@
 # TCP / UDP Connection Tester
 
-[![Build Windows](https://github.com/xuanquangf5/TestTCP/actions/workflows/build-windows.yml/badge.svg)](https://github.com/xuanquangf5/TestTCP/actions/workflows/build-windows.yml)
+[![Build and Release](https://github.com/xuanquangf5/TestTCP/actions/workflows/build.yml/badge.svg)](https://github.com/xuanquangf5/TestTCP/actions/workflows/build.yml)
 
 App Python desktop dùng thư viện chuẩn: Tkinter, socket, threading. Python 3.9 trở lên.
 
@@ -35,17 +35,36 @@ Thông điệp TCP mã hóa UTF-8 và kết thúc bằng `\n`; UDP dùng một d
 python3 -m unittest -v test_network.py
 ```
 
-## Tải app Windows
+## Tải app cho Windows, macOS và Linux
 
-Vào tab **Actions → Build Windows**, chọn lần chạy thành công mới nhất, tải artifact **TestTCP-Windows-x64** và giải nén. Mở `TestTCP.exe`; không cần cài Python. Mở file nhiều lần để có nhiều cửa sổ độc lập.
+Tải tại [GitHub Releases](https://github.com/xuanquangf5/TestTCP/releases/latest). Mỗi Release có 6 bản, không cần cài Python:
 
-Workflow tự chạy khi push lên `main`, khi mở pull request hoặc khi chọn **Run workflow**. Workflow kiểm tra mạng, giao diện, đóng gói bằng PyInstaller rồi kiểm tra file exe có khởi động được. Artifact lưu trong 30 ngày.
+| Bản | Định dạng | Yêu cầu |
+| --- | --- | --- |
+| Windows x86 | `.zip` chứa `.exe` 32-bit | Windows 10 trở lên, x86/x64 |
+| Windows x64 | `.zip` chứa `.exe` 64-bit | Windows 10 trở lên, x64 |
+| macOS Intel | `.zip` chứa `.app` | macOS 15 trở lên, Intel |
+| macOS Apple Silicon | `.zip` chứa `.app` | macOS 15 trở lên, ARM64 |
+| Linux x64 | `.tar.gz` chứa executable | Desktop Linux x86-64, glibc 2.35+ |
+| Linux ARM64 | `.tar.gz` chứa executable | Desktop Linux ARM64, glibc 2.35+ |
 
-Để tự build trên Windows:
+Giải nén và mở app. Linux chạy `./TestTCP`; file tar giữ quyền thực thi. Trên Mac dùng `open -n TestTCP.app` để mở thêm cửa sổ độc lập. Linux yêu cầu môi trường desktop/X11 hoặc XWayland, không dành cho server chỉ có terminal. Windows ARM chưa có bản native riêng.
+
+Bản macOS chưa ký Developer ID/notarize, nên có thể cần cho phép mở trong **System Settings → Privacy & Security**. Windows có thể hiện SmartScreen do app chưa ký.
+
+## Build và phát hành
+
+Workflow **Build and Release** chạy khi push `main`, push tag `v*`, mở PR hoặc chọn **Run workflow**. Mỗi bản đều chạy test mạng, mở giao diện từ source và mở app đã đóng gói rồi tự đóng để phát hiện lỗi khởi động. Artifacts của mỗi lần chạy được giữ 30 ngày.
+
+Khi cả 6 bản thành công trên `main`, workflow đọc `VERSION` và tạo GitHub Release tương ứng (ban đầu `v1.0.0`), kèm 6 file và `SHA256SUMS.txt`. Release được chuẩn bị dạng draft rồi công khai sau khi upload. PR chỉ build, không phát hành.
+
+Để phát hành phiên bản mới, sửa `VERSION` (ví dụ `1.0.1`) rồi push lên `main`. Release đã tồn tại sẽ được giữ nguyên; build mới vẫn có trong Artifacts. Nếu push tag thủ công, tag phải khớp `VERSION`. Không sửa nội dung một Release đã công khai; tăng phiên bản để phát hành lại.
+
+Build thủ công trên đúng OS/kiến trúc cần xuất:
 
 ```sh
 python -m pip install -r requirements-build.txt
-python -m PyInstaller --noconfirm --clean --onefile --windowed --name TestTCP app.py
+python scripts/build.py Windows-x64
 ```
 
-File kết quả: `dist/TestTCP.exe` (Windows x64).
+Thay đối số bằng `Windows-x86`, `macOS-x64`, `macOS-arm64`, `Linux-x64` hoặc `Linux-arm64` tương ứng. Build Windows x86 phải dùng Python 32-bit. File đóng gói nằm trong `release/`.
